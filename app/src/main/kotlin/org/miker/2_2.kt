@@ -11,12 +11,10 @@ object `2_2` {
         tailrec fun loop(prev: A, list: List<A>): Boolean {
             val current = list.head
             val tail = list.tail
-            return if (!order(prev, current)) {
-                false
-            } else if (tail.isEmpty()) {
-                true
-            } else {
-                loop(current, list.tail)
+            return when {
+                !order(prev, current) -> false
+                tail.isEmpty() -> true
+                else -> loop(current, list.tail)
             }
         }
 
