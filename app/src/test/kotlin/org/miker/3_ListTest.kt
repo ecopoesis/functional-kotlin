@@ -3,6 +3,7 @@ package org.miker
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class `3_ListTest` {
@@ -153,7 +154,7 @@ class `3_ListTest` {
     }
 
     @Test
-    internal fun flapMap() {
+    internal fun flatMap() {
         val list = MikerList.of(1, 2, 3)
         assertEquals("1 1 2 2 3 3", list.flatMap{ a -> MikerList.of(a, a) }.stringify())
     }
@@ -204,5 +205,35 @@ class `3_ListTest` {
         val l1 = MikerList.of(1, 2, 3, 4)
         val l2 = MikerList.of(4, 3)
         assertFalse(l1.hasSubsequence(l2))
+    }
+
+    @Test
+    internal fun isEmpty() {
+        val list = MikerList.of(1, 2, 3)
+        assertFalse(list.isEmpty())
+    }
+
+    @Test
+    internal fun isEmptyTrue() {
+        val list = MikerList.empty<Int>()
+        assertTrue(list.isEmpty())
+    }
+
+    @Test
+    internal fun sumDouble() {
+        val list = MikerList.of(1.0, 2.0, 3.0)
+        assertEquals(6.0, list.sum())
+    }
+
+    @Test
+    internal fun sequence() {
+        val list = MikerList.of(Some(1), Some(2), Some(3))
+        assertNotEquals(None, list.sequence())
+    }
+
+    @Test
+    internal fun sequenceNone() {
+        val list = MikerList.of(Some(1), None, Some(3))
+        assertEquals(None, list.sequence())
     }
 }

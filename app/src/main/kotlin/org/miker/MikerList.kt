@@ -1,5 +1,8 @@
 package org.miker
 
+import kotlin.math.pow
+import kotlin.math.sign
+
 sealed class MikerList<out A> {
 
     companion object {
@@ -77,14 +80,17 @@ fun <A, B> MikerList<A>.foldRight(z: B, f: (A, B) -> B): B =
         is Cons -> f(head, tail.foldRight(z, f))
     }
 
-fun MikerList<Int>.sum(): Int =
-    foldRight(0) {a, b -> a + b}
+fun MikerList<Int>.sum(): Int = foldRight(0) {a, b -> a + b}
+
+fun MikerList<Double>.sum(): Double = foldRight(0.0) {a, b -> a + b}
 
 fun MikerList<Double>.product(): Double =
     foldRight(1.0) {a, b -> a * b}
 
 fun <A> MikerList<A>.length(): Int =
     foldRight(0) {_, acc -> acc + 1}
+
+fun <A> MikerList<A>.isEmpty(): Boolean = length() == 0
 
 tailrec fun <A, B> MikerList<A>.foldLeft(z: B, f: (B, A) -> B): B =
     when (this) {
@@ -172,7 +178,6 @@ tailrec fun <A> MikerList<A>.hasSubsequence(sub: MikerList<A>): Boolean =
         }
     }
 
-
 fun MikerList<Int>.merge(l: MikerList<Int>): MikerList<Int> =
     when (this) {
         is Nil -> Nil
@@ -188,6 +193,26 @@ fun <A, B, C> MikerList<A>.zipWith(l: MikerList<B>, f: (A, B) -> C): MikerList<C
         is Cons -> when (l) {
             is Nil -> Nil
             is Cons -> Cons(f(this.head, l.head), this.tail.zipWith(l.tail, f))
+        }
+    }
+
+// chapter 4
+
+fun MikerList<Double>.mean(): Option<Double> =
+    if (isEmpty()) None
+    else Some(sum() / length())
+
+fun MikerList<Double>.variance(): Option<Double> =
+    this.mean().flatMap { m ->
+        this.map { x ->
+            (x - m).pow(2)
+        }.mean()
+    }
+
+fun <A> MikerList<Option<A>>.sequence(): Option<MikerList<A>> =
+    foldRight(Some(MikerList.empty())) { optionI: Option<A>, optionL: Option<MikerList<A>> ->
+        Option.map2(optionI, optionL) { i: A, l: MikerList<A> ->
+            Cons(i, l)
         }
     }
 
