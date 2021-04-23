@@ -2,8 +2,6 @@ package org.miker
 
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class `4_OptionTest` {
     @Test
@@ -14,7 +12,7 @@ class `4_OptionTest` {
 
     @Test
     internal fun mapNone() {
-        val foo = Option.empty<Int>()
+        val foo = MikerOption.empty<Int>()
         assertEquals(None, foo.map { a -> a + 1 })
     }
 
@@ -26,7 +24,7 @@ class `4_OptionTest` {
 
     @Test
     internal fun getOrElseNone() {
-        val foo = Option.empty<Int>()
+        val foo = MikerOption.empty<Int>()
         assertEquals(2, foo.getOrElse { 2 })
     }
 
@@ -38,7 +36,7 @@ class `4_OptionTest` {
 
     @Test
     internal fun flatMapNone() {
-        val foo = Option.empty<Int>()
+        val foo = MikerOption.empty<Int>()
         assertEquals(None, foo.flatMap { Some(it + 1) })
     }
 
@@ -50,7 +48,7 @@ class `4_OptionTest` {
 
     @Test
     internal fun orElseNone() {
-        val foo = Option.empty<Int>()
+        val foo = MikerOption.empty<Int>()
         assertEquals(Some(2), foo.orElse { Some(2) })
     }
 
@@ -68,7 +66,7 @@ class `4_OptionTest` {
 
     @Test
     internal fun filterNone() {
-        val foo = Option.empty<Int>()
+        val foo = MikerOption.empty<Int>()
         assertEquals(None, foo.filter { it % 2 == 1 } )
     }
 
@@ -76,6 +74,6 @@ class `4_OptionTest` {
     internal fun map2() {
         val foo = Some(1)
         val bar = Some(2)
-        assertEquals(Some(3), Option.map2(foo, bar) { a, b -> a + b })
+        assertEquals(Some(3), MikerOption.map2(foo, bar) { a, b -> a + b })
     }
 }

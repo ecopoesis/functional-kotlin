@@ -1,7 +1,6 @@
 package org.miker
 
 import kotlin.math.pow
-import kotlin.math.sign
 
 sealed class MikerList<out A> {
 
@@ -198,23 +197,34 @@ fun <A, B, C> MikerList<A>.zipWith(l: MikerList<B>, f: (A, B) -> C): MikerList<C
 
 // chapter 4
 
-fun MikerList<Double>.mean(): Option<Double> =
+fun MikerList<Double>.mean(): MikerOption<Double> =
     if (isEmpty()) None
     else Some(sum() / length())
 
-fun MikerList<Double>.variance(): Option<Double> =
+fun MikerList<Double>.variance(): MikerOption<Double> =
     this.mean().flatMap { m ->
         this.map { x ->
             (x - m).pow(2)
         }.mean()
     }
 
-fun <A> MikerList<Option<A>>.sequence(): Option<MikerList<A>> =
-    foldRight(Some(MikerList.empty())) { optionI: Option<A>, optionL: Option<MikerList<A>> ->
-        Option.map2(optionI, optionL) { i: A, l: MikerList<A> ->
+fun <A> MikerList<MikerOption<A>>.sequence(): MikerOption<MikerList<A>> =
+    foldRight(Some(MikerList.empty())) { optionI: MikerOption<A>, optionL: MikerOption<MikerList<A>> ->
+        MikerOption.map2(optionI, optionL) { i, l ->
             Cons(i, l)
         }
     }
+
+fun <A, B> MikerList<A>.traverse(f: (A) -> MikerOption<B>): MikerOption<MikerList<B>> =
+    when (this) {
+        is Nil -> Some(Nil)
+        is Cons ->
+            MikerOption.map2(f(this.head), this.tail.traverse(f)) { b, xb ->
+                Cons(b, xb)
+            }
+    }
+
+fun <A> MikerList<MikerOption<A>>.sequenceT(): MikerOption<MikerList<A>> = traverse { it }
 
 object Nil : MikerList<Nothing>() {
     override fun toString(): String = "Nil"
