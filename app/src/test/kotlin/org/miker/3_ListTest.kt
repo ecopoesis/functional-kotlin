@@ -248,4 +248,16 @@ class `3_ListTest` {
         val list = MikerList.of(Some(1), Some(2), Some(3))
         assertNotEquals(None, list.sequenceT())
     }
+
+    @Test
+    internal fun traverseE() {
+        val list = MikerList.of(1).traverseE { x -> Right(x + 1) }
+        assertEquals(Right(MikerList.of(2)), list)
+    }
+
+    @Test
+    internal fun sequenceE() {
+        val list = MikerList.of(Right(1))
+        assertEquals(Right(MikerList.of(1)), list.sequenceE())
+    }
 }

@@ -53,4 +53,15 @@ class `4_ArrowTest` {
         }
         assertEquals(none(), c)
     }
+
+    @Test
+    internal fun optionComprehensionBind() = runBlocking {
+        val c = option {
+            val a = Some(1).bind()
+            val b = Some(1 + a).bind()
+            val c = Some(1 + b).bind()
+            a + b + c
+        }
+        assertEquals(Some(6), c)
+    }
 }

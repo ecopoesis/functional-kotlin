@@ -31,6 +31,15 @@ sealed class MikerList<out A> {
     }
 }
 
+object Nil : MikerList<Nothing>() {
+    override fun toString(): String = "Nil"
+}
+
+data class Cons<out A>(
+    val head: A,
+    val tail: MikerList<A>
+) : MikerList<A>()
+
 fun <A> MikerList<A>.tail(): MikerList<A> =
     when (this) {
         is Cons -> tail
@@ -226,11 +235,13 @@ fun <A, B> MikerList<A>.traverse(f: (A) -> MikerOption<B>): MikerOption<MikerLis
 
 fun <A> MikerList<MikerOption<A>>.sequenceT(): MikerOption<MikerList<A>> = traverse { it }
 
-object Nil : MikerList<Nothing>() {
-    override fun toString(): String = "Nil"
-}
+fun <E, A, B> MikerList<A>.traverseE(f: (A) -> MikerEither<E, B>): MikerEither<E, MikerList<B>> =
+    when (this) {
+        is Nil -> Right(Nil)
+        is Cons ->
+            MikerEither.map2(f(this.head), this.tail.traverseE(f)) { b, xb ->
+                Cons(b, xb)
+            }
+    }
 
-data class Cons<out A>(
-    val head: A,
-    val tail: MikerList<A>
-) : MikerList<A>()
+fun <E, A> MikerList<MikerEither<E, A>>.sequenceE(): MikerEither<E, MikerList<A>> = traverseE { it }
