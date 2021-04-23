@@ -4,6 +4,7 @@ import arrow.core.Option
 import arrow.core.Some
 import arrow.core.computations.option
 import arrow.core.extensions.option.fx.fx
+import arrow.core.none
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
@@ -37,5 +38,19 @@ class `4_ArrowTest` {
             a + b + c
         }
         assertEquals(Some(6), c)
+    }
+
+    @Test
+    internal fun noneComprehension() = runBlocking {
+        val aa = Some(1)
+        val bb = none<Int>()
+        val cc = Some(2)
+        val c = option {
+            val a = aa.bind()
+            val b = bb.bind()
+            val c = cc.bind()
+            a + b + c
+        }
+        assertEquals(none(), c)
     }
 }
