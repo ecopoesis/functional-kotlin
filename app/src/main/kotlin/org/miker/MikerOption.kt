@@ -41,3 +41,4 @@ fun <A> MikerOption<A>.orElse(ob: () -> MikerOption<A>): MikerOption<A> = this.m
 
 fun <A> MikerOption<A>.filter(f: (A) -> Boolean): MikerOption<A> = this.flatMap { if (f(it)) Some(it) else None }
 
+fun <A> MikerOption<A>.isEmpty(): Boolean = this == None

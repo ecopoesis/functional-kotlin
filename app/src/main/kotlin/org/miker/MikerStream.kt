@@ -214,3 +214,27 @@ fun <A, B> MikerStream<A>.zipAll(that: MikerStream<B>): MikerStream<Pair<MikerOp
             }
         }
     }
+
+fun <A> MikerStream<A>.startsWith(that: MikerStream<A>): Boolean =
+    this.zipAll(that)
+        .takeWhileU { (_, b) -> !b.isEmpty() }
+        .forAll { (a, b) -> a == b }
+
+fun <A> MikerStream<A>.tails(): MikerStream<MikerStream<A>> =
+    MikerStream.unfold(this) {
+        when (it) {
+            is Empty -> None
+            is StreamCons -> Some(Pair(it, it.tail()))
+        }
+    }.append { MikerStream.empty() }
+
+fun <A> MikerStream<A>.hasSubsequence(s: MikerStream<A>): Boolean =
+    this.tails().exists { it.startsWith(s) }
+
+// ???
+fun <A, B> MikerStream<A>.scanRight(z: B, f: (A, () -> B) -> B): MikerStream<B> =
+    foldRight({ Pair(z, MikerStream.of(z)) }) { a: A, p0: () -> Pair<B, MikerStream<B>> ->
+            val p1: Pair<B, MikerStream<B>> by lazy { p0() }
+            val b2: B = f(a) { p1.first }
+            Pair(b2, MikerStream.cons({ b2 }, { p1.second }))
+        }.second

@@ -136,4 +136,25 @@ class `5_StreamTest` {
         val s2 = MikerStream.of(4.0, 5.0, 6.0)
         assertEquals("5.0s 7.0s 9.0s", s1.zipWith(s2){ a, b -> (a.toDouble() + b).toString() + "s" }.toList().stringify())
     }
+
+    @Test
+    internal fun startsWith() {
+        val s1 = MikerStream.of(1, 2, 3)
+        val s2 = MikerStream.of(1, 2)
+        assertTrue(s1.startsWith(s2))
+    }
+
+    @Test
+    internal fun hasSubsequence() {
+        val s1 = MikerStream.of(1, 2, 3, 4)
+        val s2 = MikerStream.of(2, 3 )
+        assertTrue(s1.hasSubsequence(s2))
+    }
+
+    @Test
+    internal fun scanRight() {
+        val stream = MikerStream.of(1, 2, 3)
+        val result = Cons(6, Cons(5, Cons(3, Cons(0, Nil))))
+        assertEquals(result, stream.scanRight(0) { a, b -> a + b() }.toList())
+    }
 }
