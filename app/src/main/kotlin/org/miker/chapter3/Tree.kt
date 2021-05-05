@@ -1,4 +1,4 @@
-package org.miker
+package org.miker.chapter3
 
 sealed class Tree<out A> {
     companion object {

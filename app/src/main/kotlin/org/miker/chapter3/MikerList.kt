@@ -1,5 +1,6 @@
-package org.miker
+package org.miker.chapter3
 
+import org.miker.chapter4.*
 import kotlin.math.pow
 
 sealed class MikerList<out A> {

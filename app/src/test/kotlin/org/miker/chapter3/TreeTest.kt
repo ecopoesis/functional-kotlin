@@ -1,11 +1,11 @@
-package org.miker
+package org.miker.chapter3
 
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class `3_TreeTest` {
+class TreeTest {
     @Test
     internal fun ofLeaf() {
         val tree = Tree.of<Int>(1)

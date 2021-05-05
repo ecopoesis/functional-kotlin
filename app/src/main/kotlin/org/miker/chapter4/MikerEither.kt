@@ -1,4 +1,4 @@
-package org.miker
+package org.miker.chapter4
 
 sealed class MikerEither<out E, out A> {
     companion object {
@@ -34,4 +34,3 @@ fun <E, A> MikerEither<E, A>.orElse(f: () -> MikerEither<E, A>): MikerEither<E, 
         is Left -> f()
         is Right -> this
     }
-

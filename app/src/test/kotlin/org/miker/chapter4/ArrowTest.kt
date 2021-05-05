@@ -1,4 +1,4 @@
-package org.miker
+package org.miker.chapter4
 
 import arrow.core.Option
 import arrow.core.Some
@@ -15,7 +15,7 @@ import org.junit.Before
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 
-class `4_ArrowTest` {
+class ArrowTest {
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
 
     @Before

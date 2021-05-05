@@ -1,12 +1,15 @@
-package org.miker
+package org.miker.chapter3
 
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
+import org.miker.chapter4.None
+import org.miker.chapter4.Right
+import org.miker.chapter4.Some
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-class `3_ListTest` {
+class ListTest {
     @Test
     internal fun tail() {
         val list = MikerList.of(1, 1, 1)

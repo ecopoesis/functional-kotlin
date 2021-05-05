@@ -1,6 +1,6 @@
-package org.miker
+package org.miker.chapter2
 
-object `2_1` {
+object Part1 {
     fun fib(i: Int): Int {
         tailrec fun loop(n: Int, a: Int = 0, b: Int = 1): Int =
             when (n) {

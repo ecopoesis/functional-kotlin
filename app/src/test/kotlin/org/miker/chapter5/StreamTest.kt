@@ -2,6 +2,11 @@ package org.miker
 
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
+import org.miker.chapter3.Cons
+import org.miker.chapter3.Nil
+import org.miker.chapter3.stringify
+import org.miker.chapter4.Some
+import org.miker.chapter5.*
 import kotlin.test.assertTrue
 
 class `5_StreamTest` {
@@ -9,6 +14,12 @@ class `5_StreamTest` {
     internal fun toList() {
         val stream = MikerStream.of(1, 2, 3)
         assertEquals(Cons(1, Cons(2, Cons(3, Nil))), stream.toList())
+    }
+
+    @Test
+    internal fun toKList() {
+        val list = MikerStream.of(1, 2, 3).toKList()
+        assertEquals(listOf(1, 2, 3), list)
     }
 
     @Test

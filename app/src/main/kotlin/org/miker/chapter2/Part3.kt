@@ -1,6 +1,6 @@
-package org.miker
+package org.miker.chapter2
 
-object `2_3` {
+object Part3 {
     // (A) -> ((B) -> C)
     // (A) -> (B) -> C
 

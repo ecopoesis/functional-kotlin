@@ -1,9 +1,9 @@
-package org.miker
+package org.miker.chapter4
 
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 
-class `4_OptionTest` {
+class OptionTest {
     @Test
     internal fun map() {
         val foo = Some(1)

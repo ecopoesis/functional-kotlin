@@ -1,6 +1,6 @@
-package org.miker
+package org.miker.chapter2
 
-object `2_2` {
+object Part2 {
     val <T> List<T>.tail: List<T>
         get() = drop(1)
 

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 val arrowVersion = "0.13.1"
 
 plugins {

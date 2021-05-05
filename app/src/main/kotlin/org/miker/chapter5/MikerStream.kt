@@ -1,6 +1,11 @@
-package org.miker
+package org.miker.chapter5
 
-import java.util.stream.Stream
+import arrow.optics.cons
+import org.miker.chapter3.Cons
+import org.miker.chapter3.MikerList
+import org.miker.chapter3.Nil
+import org.miker.chapter3.reverse
+import org.miker.chapter4.*
 
 sealed class MikerStream<out A> {
 
@@ -70,6 +75,11 @@ fun <A> MikerStream<A>.toList(): MikerList<A> =
         b, acc ->  Cons(b, acc())
 }
 
+fun <A> MikerStream<A>.toKList(): List<A> =
+    this.foldRight({ emptyList() }) {
+            b, acc -> b.cons(acc())
+    }
+
 tailrec fun <A, B> MikerStream<A>.foldLeft(z: () -> B, f: (() -> B, A) -> B): B =
     when (this) {
         is Empty -> z()
@@ -93,7 +103,7 @@ fun <A> MikerStream<A>.take(n: Int): MikerStream<A> {
 }
 
 fun <A> MikerStream<A>.reverse(): MikerStream<A> =
-    foldLeft( { MikerStream.empty() }) { acc, i -> MikerStream.cons({ i },  acc )}
+    foldLeft( { MikerStream.empty() }) { acc, i -> MikerStream.cons({ i }, acc) }
 
 fun <A> MikerStream<A>.drop(n: Int): MikerStream<A> {
     tailrec fun go(xs: MikerStream<A>, n: Int): MikerStream<A> = when (xs) {
@@ -127,7 +137,7 @@ fun <A> MikerStream<A>.forAll(p: (A) -> Boolean): Boolean =
     foldRight({ true }, { a, b -> p(a) && b() })
 
 fun <A> MikerStream<A>.takeWhileF(p: (A) -> Boolean): MikerStream<A> =
-    foldRight({MikerStream.empty()}) { h, t ->
+    foldRight({ MikerStream.empty() }) { h, t ->
         if (p(h))
             MikerStream.cons({ h }, t)
         else MikerStream.empty()
@@ -138,20 +148,30 @@ fun <A> MikerStream<A>.headOption(): MikerOption<A> =
         Some(h)
     }
 
-fun <A, B> MikerStream<A>.map(f: (A) -> B): MikerStream<B> = foldRight({ MikerStream.empty() }) { h, t -> MikerStream.cons({ f(h) }, t)}
+fun <A, B> MikerStream<A>.map(f: (A) -> B): MikerStream<B> = foldRight({ MikerStream.empty() }) { h, t ->
+    MikerStream.cons(
+        { f(h) },
+        t
+    )
+}
 
 fun <A> MikerStream<A>.filter(f: (A) -> Boolean): MikerStream<A> = foldRight({ MikerStream.empty() }) { h, t ->
     if (f(h)) MikerStream.cons({ h }, t) else t()
 }
 
-fun <A> MikerStream<A>.append(sa: () -> MikerStream<A>): MikerStream<A> = foldRight(sa) { h, t -> MikerStream.cons({ h }, t)}
+fun <A> MikerStream<A>.append(sa: () -> MikerStream<A>): MikerStream<A> = foldRight(sa) { h, t ->
+    MikerStream.cons(
+        { h },
+        t
+    )
+}
 
 fun <A, B> MikerStream<A>.flatMap(f: (A) -> MikerStream<B>): MikerStream<B> =
     foldRight({ MikerStream.empty() }) { h, t -> f(h).append(t) }
 
 fun <A, B> MikerStream<A>.mapU(f: (A) -> B): MikerStream<B> =
     MikerStream.unfold(this) { s ->
-        when(s) {
+        when (s) {
             is Empty -> None
             is StreamCons -> Some(Pair(f(s.head()), s.tail()))
         }
@@ -163,12 +183,12 @@ fun <A> MikerStream<A>.takeU(n: Int): MikerStream<A> =
             is Empty -> None
             is StreamCons ->
                 if (n == 0) None
-                else Some(Pair(s.head(), s.tail().takeU(n -1)))
+                else Some(Pair(s.head(), s.tail().takeU(n - 1)))
         }
     }
 
 fun <A> MikerStream<A>.takeWhileU(p: (A) -> Boolean): MikerStream<A> =
-    MikerStream.unfold(this) { s->
+    MikerStream.unfold(this) { s ->
         when (s) {
             is Empty -> None
             is StreamCons ->
@@ -184,10 +204,12 @@ fun <A, B, C> MikerStream<A>.zipWith(that: MikerStream<B>, f: (A, B) -> C): Mike
             is StreamCons -> when (sb) {
                 is Empty -> None
                 is StreamCons ->
-                    Some(Pair(
-                        f(sa.head(), sb.head()),
-                        Pair(sa.tail(), sb.tail())
-                    ))
+                    Some(
+                        Pair(
+                            f(sa.head(), sb.head()),
+                            Pair(sa.tail(), sb.tail())
+                        )
+                    )
             }
         }
     }
@@ -197,20 +219,26 @@ fun <A, B> MikerStream<A>.zipAll(that: MikerStream<B>): MikerStream<Pair<MikerOp
         when (sa) {
             is Empty -> when (sb) {
                 is Empty -> None
-                is StreamCons -> Some(Pair(
-                    Pair(None, Some(sb.head())),
-                    Pair(MikerStream.empty(), sb.tail())
-                ))
+                is StreamCons -> Some(
+                    Pair(
+                        Pair(None, Some(sb.head())),
+                        Pair(MikerStream.empty(), sb.tail())
+                    )
+                )
             }
             is StreamCons -> when (sb) {
-                is Empty -> Some(Pair(
-                    Pair(Some(sa.head()), None),
-                    Pair(sa.tail(), MikerStream.empty())
-                ))
-                is StreamCons -> Some(Pair(
-                    Pair(Some(sa.head()), Some(sb.head())),
-                    Pair(sa.tail(), sb.tail())
-                ))
+                is Empty -> Some(
+                    Pair(
+                        Pair(Some(sa.head()), None),
+                        Pair(sa.tail(), MikerStream.empty())
+                    )
+                )
+                is StreamCons -> Some(
+                    Pair(
+                        Pair(Some(sa.head()), Some(sb.head())),
+                        Pair(sa.tail(), sb.tail())
+                    )
+                )
             }
         }
     }
@@ -235,6 +263,6 @@ fun <A> MikerStream<A>.hasSubsequence(s: MikerStream<A>): Boolean =
 fun <A, B> MikerStream<A>.scanRight(z: B, f: (A, () -> B) -> B): MikerStream<B> =
     foldRight({ Pair(z, MikerStream.of(z)) }) { a: A, p0: () -> Pair<B, MikerStream<B>> ->
             val p1: Pair<B, MikerStream<B>> by lazy { p0() }
-            val b2: B = f(a) { p1.first }
+            val b2 = f(a) { p1.first }
             Pair(b2, MikerStream.cons({ b2 }, { p1.second }))
         }.second

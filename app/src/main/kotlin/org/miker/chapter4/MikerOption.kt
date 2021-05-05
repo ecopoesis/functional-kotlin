@@ -1,4 +1,4 @@
-package org.miker
+package org.miker.chapter4
 
 sealed class MikerOption<out A> {
     companion object {
