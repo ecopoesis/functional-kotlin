@@ -1,4 +1,4 @@
-package org.miker
+package org.miker.chapter5
 
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
@@ -9,7 +9,7 @@ import org.miker.chapter4.Some
 import org.miker.chapter5.*
 import kotlin.test.assertTrue
 
-class `5_StreamTest` {
+class StreamTest {
     @Test
     internal fun toList() {
         val stream = MikerStream.of(1, 2, 3)
